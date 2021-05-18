@@ -2,10 +2,12 @@ package com.home.snake
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import java.util.*
 import kotlin.concurrent.fixedRateTimer
 import kotlin.random.Random
 
 class SnakeViewModel : ViewModel(){
+    private lateinit var timer: Timer
     val body = MutableLiveData<List<Position>>()
     val apple = MutableLiveData<Position>()
     val score = MutableLiveData<Int>()
@@ -25,7 +27,7 @@ class SnakeViewModel : ViewModel(){
             body.value = snakeBody
         }
         generateApple()
-        fixedRateTimer("timer",true,500,400){
+        timer = fixedRateTimer("timer",true,500,400){
             val pos = snakeBody.first().copy().apply {
                 when(direction){
                     Direction.LEFT ->x--
@@ -69,9 +71,12 @@ class SnakeViewModel : ViewModel(){
         apple.postValue(applePos)
     }
     fun reset(){
+        timer.cancel()
         snakeBody.clear()
-        direction = Direction.LEFT
+        body.postValue(snakeBody)
         point = 0
+        score.postValue(point)
+        direction = Direction.LEFT
         start()
 
     }

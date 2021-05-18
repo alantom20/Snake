@@ -1,5 +1,6 @@
 package com.home.snake
 
+import android.content.DialogInterface
 import android.os.Bundle
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -29,6 +30,9 @@ class MainActivity : AppCompatActivity() {
                         .setTitle("Game")
                         .setMessage("Game Over")
                         .setPositiveButton("OK",null)
+                        .setNegativeButton("Replay", DialogInterface.OnClickListener { dialog, which ->
+                            viewModel.reset()
+                        })
                         .show()
             }
         })
@@ -43,7 +47,15 @@ class MainActivity : AppCompatActivity() {
 
 
         findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-            viewModel.reset()
+            AlertDialog.Builder(this@MainActivity)
+                    .setTitle("Game")
+                    .setMessage("Replay?")
+                    .setPositiveButton("yes", DialogInterface.OnClickListener { dialog, which ->
+                        viewModel.reset()
+                    })
+                    .setNegativeButton("no",null)
+                    .show()
+
         }
         viewModel.start()
         top.setOnClickListener { viewModel.move(Direction.TOP )}
@@ -63,7 +75,10 @@ class MainActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_exit -> {
+                finish()
+                return true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
